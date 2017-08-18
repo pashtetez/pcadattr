@@ -6,7 +6,7 @@
 def attr_editing(self):
 
     def add_attr_if_not_exists(arr,key,val):
-        if findAll(attr,'attr',key) == [] :
+        if findAll(arr,'attr',key) == [] :
             desc.append(['attr',key,val,['pt','0.0','0.0'],['isVisible','False'],['textStyleRef','"(Default)"']])
 
     def process_component(desc, **n):

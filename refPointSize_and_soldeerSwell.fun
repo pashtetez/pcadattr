@@ -2,5 +2,12 @@
 #и soldeerSwell на 0.01
 
 def refPointSize_and_soldeerSwell(self):
-    findPath(self.fdata, ["pcbDesign", "pcbDesignHeader","refPointSize"])[0][1]="1.0"
-    findPath(self.fdata, ["pcbDesign", "pcbDesignHeader","solderSwell"])[0][1]="0.01"
+    pcbDesignHeader = findPath(self.fdata, ["pcbDesign", "pcbDesignHeader"])[0]
+    if findAll(pcbDesignHeader,"refPointSize") == []:
+        pcbDesignHeader.append(["refPointSize","1.0"])
+    else:
+        find(pcbDesignHeader,"refPointSize")[1]="1.0"
+    if findAll(pcbDesignHeader,"solderSwell") == []:
+        pcbDesignHeader.append(["solderSwell","0.01"])
+    else:
+        find(pcbDesignHeader,"solderSwell")[1]="0.01"

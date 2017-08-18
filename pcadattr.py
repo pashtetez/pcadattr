@@ -32,6 +32,7 @@ def Sandbox(code,obj):
     out, err, exc = None, None, None
 
     try:
+        #print(code)
         exec(code, ns_globals, ns_locals)
     except:
         import traceback
@@ -43,12 +44,16 @@ def Sandbox(code,obj):
     # reset outputs to the original values
     sys.stdout = old_stdout
     sys.stderr = old_stderr
+    print(out)
 
     return out, err, exc
+
+def findAll(a,key,val = None):
     if val:
         return [x for x in a if x[0] == key and x[1] == val ]
     else:
         return [x for x in a if x[0] == key]
+
 
 def find(a,key,val = None):
     return findAll(a,key,val)[0]
@@ -177,8 +182,8 @@ class MainWindow(QMainWindow):
         for x in range(self.ui.listWidget.count()):
             fun = self.ui.listWidget.item(x)
             if fun.checkState() == Qt.Checked:
-                #exec('global '+fun.text())
-                Sandbox('obj.'+fun.text()+"(obj)",self)
+                exec('self.'+fun.text()+"(self)")
+                #Sandbox('obj.'+fun.text()+"(obj)",self)
 
     def addTable(self, a, tabname = "", columnName=[],rowName=[]):
         # Create table
