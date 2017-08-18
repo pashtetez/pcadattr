@@ -104,7 +104,7 @@ class MainWindow(QMainWindow):
         if self.ui.lineEdit_in.text() != "" :
             self.ui.lineEdit_out.setText(self.ui.lineEdit_in.text())
             finf = QFileInfo(self.ui.lineEdit_out.text())
-            self.ui.lineEdit_out.setText(finf.path()+"/"+''.join(finf.fileName().split(".")[:-1])+".pcb")
+            self.ui.lineEdit_out.setText(finf.path()+"/"+''.join(finf.fileName().split(".")[:-1])+"_SB.pcb")
 
     @pyqtSlot()
     def on_pushButton_out_clicked(self):
@@ -155,7 +155,7 @@ class MainWindow(QMainWindow):
         fdata = self.fdata
         for name in os.listdir(path="."): 
             if name.endswith('.fun'):
-                file = open (name, 'r')
+                file = open (name, 'r', encoding="utf8")
                 fun=file.read()
                 try:
                     exec(fun)
@@ -205,7 +205,7 @@ class MainWindow(QMainWindow):
     @pyqtSlot(QListWidgetItem)
     def showComent (self, item):
         self.ui.plainTextEdit.clear()
-        fun=open(item.text()+'.fun',"r")
+        fun=open(item.text()+'.fun',"r", encoding="utf8")
         for line in fun:
             if line.startswith("#"):
                 self.ui.plainTextEdit.setPlainText(self.ui.plainTextEdit.toPlainText()+line)

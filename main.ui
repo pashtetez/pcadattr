@@ -30,7 +30,7 @@
           <item row="1" column="2">
            <widget class="QLineEdit" name="lineEdit_out">
             <property name="text">
-             <string>stet.pcb</string>
+             <string></string>
             </property>
            </widget>
           </item>
@@ -51,7 +51,7 @@
           <item row="0" column="2">
            <widget class="QLineEdit" name="lineEdit_in">
             <property name="text">
-             <string>test.pcb</string>
+             <string></string>
             </property>
            </widget>
           </item>
