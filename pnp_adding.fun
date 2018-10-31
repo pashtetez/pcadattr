@@ -26,8 +26,15 @@ def pnp_adding(self):
             else:
                 spads+=1
             shape = find(dd, 'padShape',['layerNumRef', '1'])
-            dx=mfloat(find(shape,"shapeWidth")[1])/2;
-            dy=mfloat(find(shape,"shapeHeight")[1])/2;
+            dx = 0.0
+            dy = 0.0
+            if find(shape,"padShapeType")[1] != "Polygon" :
+                dx=mfloat(find(shape,"shapeWidth")[1])/2;
+                dy=mfloat(find(shape,"shapeHeight")[1])/2;
+            else:
+                outline = find(shape,"shapeOutline")[1:]
+                dx = (max([float(a[1]) for a in outline]) - min([float(a[1]) for a in outline]))/2
+                dy = (max([float(a[2]) for a in outline]) - min([float(a[2]) for a in outline]))/2
             if (spads+dpads) == 1 :
                 xmaxl=x-dx
                 xmaxr=x+dx
