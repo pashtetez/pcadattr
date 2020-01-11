@@ -29,8 +29,15 @@ def pnp_adding(self):
             dx = 0.0
             dy = 0.0
             if find(shape,"padShapeType")[1] != "Polygon" :
-                dx=mfloat(find(shape,"shapeWidth")[1])/2;
-                dy=mfloat(find(shape,"shapeHeight")[1])/2;
+                if findAll(shape,"shapeWidth"):
+                    dx=mfloat(find(shape,"shapeWidth")[1])/2
+                    dy=mfloat(find(shape,"shapeHeight")[1])/2
+                elif findAll(shape,"outsideDiam"):
+                    dx=mfloat(find(shape,"outsideDiam")[1])/2
+                    dy=mfloat(find(shape,"outsideDiam")[1])/2
+                else:
+                    dx = 0
+                    dy = 0
             else:
                 outline = find(shape,"shapeOutline")[1:]
                 dx = (max([float(a[1]) for a in outline]) - min([float(a[1]) for a in outline]))/2
