@@ -126,10 +126,17 @@ class MainWindow(QMainWindow):
         if new_file.exists():
             if(QMessageBox.information(self, "Converter","Output file already exists. Are you sure you want to continue?", QMessageBox.Ok|QMessageBox.Cancel)==QMessageBox.Cancel):
                 return
-        self.readfile()
+        if not self.readfile():
+            if (QMessageBox.warning(self, "Converter",
+                                        "Given file is not in ASCII format. Please select another file",
+                                        QMessageBox.Ok)):
+                return
         self.checkFunction()
         self.writefile()
-
+        if (QMessageBox.information(self, "Converter",
+                                "File generated successfully",
+                                QMessageBox.Ok)):
+            return
         
     def writefile(self):
         self.prev_str = False #thing for writing
@@ -141,9 +148,12 @@ class MainWindow(QMainWindow):
 
     def readfile(self):
         self.fdata = []
+        with open(str(self.ui.lineEdit_in.text()), 'r', encoding="cp1251") as fl:
+            if fl.read().find("ACCEL_ASCII")!=0 :
+                return False
         with open(str(self.ui.lineEdit_in.text()),'r',encoding="cp1251") as fl:
             data = fl.read()#.decode("utf-8", "replace")
-            data = [p for p in re.split("(\s|\\\".*?\\\"|\)|\()", data) if p.strip()]
+            data = [p for p in re.split("(\s|\".*?(?<!\\\\)\"|\)|\()", data) if p and p.strip()]
             self.fdata.append(list())
             for x in data:
                 if x == '(':
@@ -154,6 +164,7 @@ class MainWindow(QMainWindow):
                 else:
                     self.fdata[-1].append(x)
         self.fdata = self.fdata[0]
+        return True
 
     def execfuncs(self):
         global fdata 
