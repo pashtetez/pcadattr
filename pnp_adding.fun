@@ -40,8 +40,8 @@ def pnp_adding(self):
                     dy = 0
             else:
                 outline = find(shape,"shapeOutline")[1:]
-                dx = (max([float(a[1]) for a in outline]) - min([float(a[1]) for a in outline]))/2
-                dy = (max([float(a[2]) for a in outline]) - min([float(a[2]) for a in outline]))/2
+                dx = (max([mfloat(a[1]) for a in outline]) - min([mfloat(a[1]) for a in outline]))/2
+                dy = (max([mfloat(a[2]) for a in outline]) - min([mfloat(a[2]) for a in outline]))/2
             if (spads+dpads) == 1 :
                 xmaxl=x-dx
                 xmaxr=x+dx
