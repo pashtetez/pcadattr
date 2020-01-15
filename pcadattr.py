@@ -105,7 +105,7 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_pushButton_in_clicked(self):
-        self.ui.lineEdit_in.setText(QFileDialog.getOpenFileName(self,"Open eagle cad file", QFileInfo(self.ui.lineEdit_in.text()).filePath(), "PCAD Files (*.pcb)")[0])
+        self.ui.lineEdit_in.setText(QFileDialog.getOpenFileName(self,"Open pcad file", QFileInfo(self.ui.lineEdit_in.text()).filePath(), "PCAD Files (*.pcb *.PCB)")[0])
         if self.ui.lineEdit_in.text() != "" :
             self.ui.lineEdit_out.setText(self.ui.lineEdit_in.text())
             finf = QFileInfo(self.ui.lineEdit_out.text())
