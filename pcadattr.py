@@ -11,7 +11,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtNetwork import *
-from PyQt5.QtSvg import *
+#from PyQt5.QtSvg import *
 from PyQt5 import uic
 
 #pyinstaller pcadattr.py --add-data "main.ui;." -y --onefile --windowed
@@ -148,9 +148,12 @@ class MainWindow(QMainWindow):
 
     def readfile(self):
         self.fdata = []
-        with open(str(self.ui.lineEdit_in.text()), 'r', encoding="cp1251") as fl:
-            if fl.read().find("ACCEL_ASCII")!=0 :
-                return False
+        try:
+            with open(str(self.ui.lineEdit_in.text()), 'r', encoding="cp1251") as fl:
+                if fl.read().find("ACCEL_ASCII")!=0 :
+                    return False
+        except:
+            return False
         with open(str(self.ui.lineEdit_in.text()),'r',encoding="cp1251") as fl:
             data = fl.read()#.decode("utf-8", "replace")
             data = [p for p in re.split("(\s|\".*?(?<!\\\\)\"|\)|\()", data) if p and p.strip()]
