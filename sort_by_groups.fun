@@ -2,6 +2,13 @@
 
 
 def sort_by_groups(self):
+    Asize = 6
+    Bsize = 20
+    Csize = 45
+    Apads= 8
+    Bpads = 44
+    Cpads = 160
+
     import math
     pads = findPath(self.fdata, ["library", "padStyleDef"])
     patdef = findPath(self.fdata, ["library", "patternDefExtended"])
@@ -107,11 +114,12 @@ def sort_by_groups(self):
         one_comp_to_write["dipsmd"] = dipsmd
         comps_to_write.append(one_comp_to_write)
     f1 = open("test_comps.csv", 'w', encoding="cp1251", errors="surrogateescape")
-    f1.write("name;pattern;original_name;x;y;side;pads_count;smd_pads;dip_pads;width;height;size\r\n")
+    f1.write("name;pattern;original_name;dipsmd;x;y;side;pads_count;smd_pads;dip_pads;width;height;size;group\r\n")
     for c in comps_to_write:
         f1.write("%s;" % c["name"])
         f1.write("%s;" % c["patternRef"][1:-1])
         f1.write("%s;" % patmap[c["patternRef"]][0])
+        f1.write("%s;" % c["dipsmd"])
         f1.write("%f;" % c["x"])
         f1.write("%f;" % c["y"])
         f1.write("%s;" % c["side"])
@@ -120,6 +128,16 @@ def sort_by_groups(self):
         f1.write("%d;" % patmap[c["patternRef"]][2])
         f1.write("%f;" % patmap[c["patternRef"]][3])
         f1.write("%f;" % patmap[c["patternRef"]][4])
-        f1.write("%f" % patmap[c["patternRef"]][5])
+        f1.write("%f;" % patmap[c["patternRef"]][5])
+        grtype = ""
+        if (patmap[c["patternRef"]][5] < Asize) and ((patmap[c["patternRef"]][1] + patmap[c["patternRef"]][2]) < Apads):
+            grtype = "Atype"
+        elif (patmap[c["patternRef"]][5] < Bsize) and ((patmap[c["patternRef"]][1] + patmap[c["patternRef"]][2]) < Bpads):
+            grtype = "Btype"
+        elif (patmap[c["patternRef"]][5] < Csize) and ((patmap[c["patternRef"]][1] + patmap[c["patternRef"]][2]) < Cpads):
+            grtype = "Ctype"
+        else:
+            grtype = "Dtype"
+        f1.write("%s" % grtype)
         f1.write("\r\n")
     f1.close()
