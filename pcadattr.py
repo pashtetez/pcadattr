@@ -134,8 +134,175 @@ class MainWindow(QMainWindow):
                                         "Given file is not in ASCII format. Please select another file",
                                         QMessageBox.Ok)):
                 return
+
+
+
+
+
+
+
+
+
+
+
+
+
+        replace_map = {}
+        replace_symbols = [[" ", "_"], [",", "."], ["/", "_"], ["%", "_"], ["<", "."], [">", "_"]]
+
+        def repl(s):
+            if s not in replace_map:
+                a = s
+                for x in replace_symbols:
+                    a = a.replace(x[0], x[1])
+                replace_map[s] = a
+            return replace_map[s]
+
+        patdef = findPath(self.fdata, ["library", "patternDefExtended"])
+        for pd in patdef:
+            pd[1] = repl(pd[1])
+            orig_name = find(pd, 'originalName')
+            orig_name[1] = repl(orig_name[1])
+        compdef = findPath(self.fdata, ["library", "compDef"])
+        for cd in compdef:
+            cd[1] = repl(cd[1])
+            orig_name = find(cd, 'originalName')
+            orig_name[1] = repl(orig_name[1])
+            attached_pat = find(find(cd, 'attachedPattern'), 'patternName')
+            attached_pat[1] = repl(attached_pat[1])
+        compinst = findPath(self.fdata, ['netlist', 'compInst'])
+        for ci in compinst:
+            orig_name = find(ci, 'compRef')
+            orig_name[1] = repl(orig_name[1])
+            orig_name = find(ci, 'originalName')
+            orig_name[1] = repl(orig_name[1])
+            if len(findAll(ci, 'compValue')):
+                orig_name = find(ci, 'compValue')
+                orig_name[1] = repl(orig_name[1])
+        pats = findPath(self.fdata, ["pcbDesign", "multiLayer", "pattern"])
+        for p in pats:
+            orig_name = find(p, 'patternRef')
+            orig_name[1] = repl(orig_name[1])
+            pgr = find(p, "patternGraphicsRef")
+            if findAll(pgr, 'attr', '"Value"'):
+                orig_name = find(pgr, 'attr', '"Value"')
+                orig_name[2] = repl(orig_name[2])
+            if findAll(pgr, 'attr', '"Type"'):
+                orig_name = find(pgr, 'attr', '"Type"')
+                orig_name[2] = repl(orig_name[2])
+
+
+
+
+
+
+
+
+
+
         # self.checkFunction()
         self.common_parse()
+
+
+
+
+        def add_attr_if_not_exists(arr, key, val):
+            if findAll(arr, 'attr', key) == []:
+                desc.append(
+                    ['attr', key, val, ['pt', '0.0', '0.0'], ['isVisible', 'False'], ['textStyleRef', '"(Default)"']])
+
+        def process_component(desc, dipsmd, refdes):
+            add_attr_if_not_exists(desc, '"DIPSMD"', '"' + dipsmd + '"')
+            if dipsmd == 'SMD':
+                add_attr_if_not_exists(desc, '"DB_NUMBER"', '"{DB_NUMBER}"')
+            if re.match('^"R.*"', refdes):
+                add_attr_if_not_exists(desc, '"Tolerance"', '"{Tolerance}"')
+            if dipsmd == 'SMD' and re.match('^"R.*"', refdes):
+                add_attr_if_not_exists(desc, '"Value2"', '"{Value2}"')
+            if re.match('^"C[^E].*"', refdes):
+                add_attr_if_not_exists(desc, '"Tolerance"', '"{Tolerance}"')
+                add_attr_if_not_exists(desc, '"TKE"', '"{TKE}"')
+                add_attr_if_not_exists(desc, '"Voltage"', '"{Voltage}"')
+
+        for xx in self.comps_to_write:
+            desc = find(xx[-1], "patternGraphicsRef")
+            process_component(desc, self.patmap[xx[5]][6], xx[1])
+            try:
+                desc = findPath(self.fdata, ['netlist', 'compInst'], xx[1])[0]
+                process_component(desc, self.patmap[xx[5]][6], xx[1])
+            except:
+                pass
+
+
+
+
+        relative_coord_top = [100.0, 200.0]
+        relative_coord_bot = [100.0, 200.0]
+        output_file_prefix = "test"
+        mirror_y_top = 1
+        mirror_x_top = 0
+        mirror_y_bot = 1
+        mirror_x_bot = 0
+
+        filehandle_top = open(output_file_prefix + "_top.txt", 'w')
+        filehandle_bot = open(output_file_prefix + "_bottom.txt", 'w')
+        mirror_y_top = -1 * (mirror_y_top * 2 - 1)
+        mirror_x_top = -1 * (mirror_x_top * 2 - 1)
+        mirror_y_bot = -1 * (mirror_y_bot * 2 - 1)
+        mirror_x_bot = -1 * (mirror_x_bot * 2 - 1)
+
+        for co in self.comps_to_write:
+            filehandle = ""
+            relative_coord = ""
+            mirror_y = 1
+            mirror_x = 1
+            if co[4] == "TOP":
+                filehandle = filehandle_top
+                relative_coord = relative_coord_top
+                mirror_y = mirror_y_top
+                mirror_x = mirror_x_top
+            else:
+                filehandle = filehandle_bot
+                relative_coord = relative_coord_bot
+                mirror_y = mirror_y_bot
+                mirror_x = mirror_x_bot
+            filehandle.write('#' + co[1])
+            filehandle.write('\r\n')
+            for pa in co[0]:
+                filehandle.write('X:' + ("%07.3f" % (mirror_x * (-pa["x"] + co[2] - relative_coord[0]))))
+                filehandle.write(';Y:' + ("%07.3f" % (mirror_y * (pa["y"] + co[3] - relative_coord[1]))))
+                filehandle.write(';D:' + str(pa["h"]))
+                filehandle.write('\r\n')
+        filehandle_top.close()
+        filehandle_bot.close()
+
+
+
+
+
+        for (k, v) in self.patmap.items():
+            if v[1] > 1 and  v[1] +  v[2] > 0:
+                pickpoint = ['pickpoint', ['pt', v[-3], v[-2]]]
+                mltl = findPath(v[-1], ["patternGraphicsDef", "multiLayer"])[0]
+                if findAll(mltl, 'pickpoint') == []:
+                    mltl.append(pickpoint)
+
+
+
+
+        pcbDesignHeader = findPath(self.fdata, ["pcbDesign", "pcbDesignHeader"])[0]
+        if findAll(pcbDesignHeader, "refPointSize") == []:
+            pcbDesignHeader.append(["refPointSize", "1.0"])
+        else:
+            find(pcbDesignHeader, "refPointSize")[1] = "1.0"
+        if findAll(pcbDesignHeader, "solderSwell") == []:
+            pcbDesignHeader.append(["solderSwell", "0.01"])
+        else:
+            find(pcbDesignHeader, "solderSwell")[1] = "0.01"
+
+
+
+
         self.writefile()
         if (QMessageBox.information(self, "Converter",
                                 "File generated successfully",
@@ -243,14 +410,12 @@ class MainWindow(QMainWindow):
         Bpads = 44
         Cpads = 160
 
-        headers = ["type", "original_name", "smd_pads", "dip_pads", "width", "height", "size"]
+        headers = ["type", "original_name", "smd_pads", "dip_pads", "width", "height", "size", "dipsmd", "group"]
 
         import math
         pads = findPath(self.fdata, ["library", "padStyleDef"])
         patdef = findPath(self.fdata, ["library", "patternDefExtended"])
         pats = findPath(self.fdata, ["pcbDesign", "multiLayer", "pattern"])
-        f = open("test_defs.csv", 'w', encoding="cp1251", errors="surrogateescape")
-        f.write("type;original_name;smd_pads;dip_pads;width;height;size\r\n")
         patmap = {}
         for xx in patdef:
             b = findPath(xx, ["patternGraphicsDef", "multiLayer", "pad"])
@@ -304,14 +469,38 @@ class MainWindow(QMainWindow):
                         ymaxt = y + dy
             patmap[xx[1]] = [find(xx, "originalName")[1], spads, dpads, xmaxr - xmaxl, ymaxt - ymaxb,
                              math.sqrt((ymaxt - ymaxb) * (ymaxt - ymaxb) + (xmaxr - xmaxl) * (xmaxr - xmaxl))]
-        f.close()
+            grtype = ""
+            dipsmd = ''
+            if spads > 1 and spads + dpads > 0:
+                dipsmd = 'SMD'
+            elif spads + dpads > 1:
+                dipsmd = 'DIP'
+            else:
+                dipsmd = 'XX'
+            patmap[xx[1]].append(dipsmd)
+            if (patmap[xx[1]][5] < Asize) and (
+                    (patmap[xx[1]][1] + patmap[xx[1]][2]) < Apads):
+                grtype = "Atype"
+            elif (patmap[xx[1]][5] < Bsize) and (
+                    (patmap[xx[1]][1] + patmap[xx[1]][2]) < Bpads):
+                grtype = "Btype"
+            elif (patmap[xx[1]][5] < Csize) and (
+                    (patmap[xx[1]][1] + patmap[xx[1]][2]) < Cpads):
+                grtype = "Ctype"
+            else:
+                grtype = "Dtype"
+            patmap[xx[1]].append(grtype)
+            patmap[xx[1]].append(str((xmaxl + xmaxr) / 2))
+            patmap[xx[1]].append(str((ymaxt + ymaxb) / 2))
+            patmap[xx[1]].append(xx)
 
         self.ui.compDefTable.setColumnCount(len(headers))
-        for (k,v) in patmap.items():
+        for (k, v) in patmap.items():
             self.ui.compDefTable.insertRow(0)
             self.ui.compDefTable.setItem(0, 0, QTableWidgetItem(k))
-            for i in range(0,len(headers)-1):
+            for i in range(0, len(headers)-1):
                 self.ui.compDefTable.setItem(0, i+1, QTableWidgetItem(str(v[i])))
+
         comps_to_write = []
         for xx in pats:
             b = find(patdef, "patternDefExtended", find(xx, "patternRef")[1])
@@ -321,17 +510,15 @@ class MainWindow(QMainWindow):
                 rotaion = math.radians(float(find(xx, "rotation")[1]))
             except:
                 pass
-            refDesRef = find(xx, "refDesRef")[1][1:-1]
+            refDesRef = find(xx, "refDesRef")[1]
             side = "TOP"
             try:
                 if find(xx, "isFlipped"):
                     side = "BOTTOM"
             except:
                 pass
-            one_comp_to_write = {"name": refDesRef, "x": point[0], "y": point[1], "side": side, "pads": []}
-            one_comp_to_write["patternRef"] = find(xx, "patternRef")[1]
-            spads = 0
-            dpads = 0
+
+            one_comp_to_write = [[], refDesRef, point[0], point[1], side, find(xx, "patternRef")[1]]
             pad = findPath(b, ["patternGraphicsDef", "multiLayer", "pad"])
             for p in pad:
                 pt = find(p, "pt")
@@ -339,57 +526,36 @@ class MainWindow(QMainWindow):
                 dd = find(pads, 'padStyleDef', c)
                 hole_diam = mfloat(find(dd, 'holeDiam')[1])
                 if hole_diam:
-                    dpads += 1
                     x_relative = mfloat(pt[1]) * math.cos(rotaion) - mfloat(pt[2]) * math.sin(rotaion)
                     y_relative = mfloat(pt[2]) * math.cos(rotaion) + mfloat(pt[1]) * math.sin(rotaion)
-                    one_comp_to_write["pads"].append({"x": x_relative, "y": y_relative, "h": hole_diam})
-                else:
-                    spads += 1
-            desc = find(xx, "patternGraphicsRef")
-            refdes = find(xx, 'refDesRef')[1]
-            dipsmd = ''
-            if spads > 1 and spads + dpads > 0:
-                dipsmd = 'SMD'
-            elif spads + dpads > 1:
-                dipsmd = 'DIP'
-            else:
-                dipsmd = 'XX'
-            one_comp_to_write["dipsmd"] = dipsmd
+                    one_comp_to_write[0].append({"x": x_relative, "y": y_relative, "h": hole_diam})
+            one_comp_to_write.append(xx)
             comps_to_write.append(one_comp_to_write)
-        f1 = open("test_comps.csv", 'w', encoding="cp1251", errors="surrogateescape")
-        f1.write("name;pattern;original_name;dipsmd;x;y;side;pads_count;smd_pads;dip_pads;width;height;size;group\r\n")
-        for c in comps_to_write:
-            f1.write("%s;" % c["name"])
-            f1.write("%s;" % c["patternRef"][1:-1])
-            f1.write("%s;" % patmap[c["patternRef"]][0])
-            f1.write("%s;" % c["dipsmd"])
-            f1.write("%f;" % c["x"])
-            f1.write("%f;" % c["y"])
-            f1.write("%s;" % c["side"])
-            f1.write("%d;" % (patmap[c["patternRef"]][1] + patmap[c["patternRef"]][2]))
-            f1.write("%d;" % patmap[c["patternRef"]][1])
-            f1.write("%d;" % patmap[c["patternRef"]][2])
-            f1.write("%f;" % patmap[c["patternRef"]][3])
-            f1.write("%f;" % patmap[c["patternRef"]][4])
-            f1.write("%f;" % patmap[c["patternRef"]][5])
-            grtype = ""
-            if (patmap[c["patternRef"]][5] < Asize) and (
-                    (patmap[c["patternRef"]][1] + patmap[c["patternRef"]][2]) < Apads):
-                grtype = "Atype"
-            elif (patmap[c["patternRef"]][5] < Bsize) and (
-                    (patmap[c["patternRef"]][1] + patmap[c["patternRef"]][2]) < Bpads):
-                grtype = "Btype"
-            elif (patmap[c["patternRef"]][5] < Csize) and (
-                    (patmap[c["patternRef"]][1] + patmap[c["patternRef"]][2]) < Cpads):
-                grtype = "Ctype"
-            else:
-                grtype = "Dtype"
-            f1.write("%s" % grtype)
 
-            self.ui.compTable.insertRow(0)
-            self.ui.compTable.setItem(0,0,QTableWidgetItem(c["name"]))
-            f1.write("\r\n")
-        f1.close()
+        self.patmap = patmap
+        self.comps_to_write = comps_to_write
+        # f1 = open("test_comps.csv", 'w', encoding="cp1251", errors="surrogateescape")
+        # f1.write("name;pattern;original_name;dipsmd;x;y;side;pads_count;smd_pads;dip_pads;width;height;size;group\r\n")
+        # for c in comps_to_write:
+        #     grtype = ""
+        #     if (patmap[c["patternRef"]][5] < Asize) and (
+        #             (patmap[c["patternRef"]][1] + patmap[c["patternRef"]][2]) < Apads):
+        #         grtype = "Atype"
+        #     elif (patmap[c["patternRef"]][5] < Bsize) and (
+        #             (patmap[c["patternRef"]][1] + patmap[c["patternRef"]][2]) < Bpads):
+        #         grtype = "Btype"
+        #     elif (patmap[c["patternRef"]][5] < Csize) and (
+        #             (patmap[c["patternRef"]][1] + patmap[c["patternRef"]][2]) < Cpads):
+        #         grtype = "Ctype"
+        #     else:
+        #         grtype = "Dtype"
+        #     f1.write("%s" % grtype)
+        #
+        #     self.ui.compTable.insertRow(0)
+        #     self.ui.compTable.setItem(0,0,QTableWidgetItem(c["name"]))
+        #     f1.write("\r\n")
+        #
+        # f1.close()
 
 
 if __name__ == '__main__':
