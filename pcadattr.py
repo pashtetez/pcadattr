@@ -17,6 +17,7 @@ from PyQt5.QtNetwork import *
 from PyQt5 import uic
 
 from pcadfile import *
+from sandbox import *
 
 # pyinstaller pcadattr.py --add-data "main.ui;." -y --onefile --windowed
 
@@ -35,7 +36,6 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.fdata = []  # read array
         self.ui.listWidget.itemClicked.connect(self.show_comment)
-        self.execfuncs()
 
     @pyqtSlot()
     def on_pushButton_in_clicked(self):
@@ -82,10 +82,16 @@ class MainWindow(QMainWindow):
             data = fl.read()
             a = PcadFile(data)
             a.process()
-            for x in range(self.ui.listWidget.count()):
-                fun = self.ui.listWidget.item(x)
-                if fun.checkState() == Qt.Checked:
-                    pass
+            # for x in range(self.ui.listWidget.count()):
+            #     fun = self.ui.listWidget.item(x)
+            #     if fun.checkState() == Qt.Checked:
+            #         pass
+            s = SandBox()
+            # item = QListWidgetItem(name.split(".")[0])
+            # item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            # item.setCheckState(Qt.Unchecked)
+            # item.setCheckState(Qt.Unchecked)
+            # self.ui.listWidget.addItem(item)
             with open(self.ui.lineEdit_out.text(), 'w', encoding="cp1251", errors="surrogateescape") as f:
                 f.write(a.export_to_str())
 
