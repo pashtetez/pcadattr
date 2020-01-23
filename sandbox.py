@@ -16,12 +16,12 @@ class SandBox:
             return
         for name in os.listdir(path=path):
             if name.endswith('.fun'):
-                file = open(name, 'r', encoding="utf8")
+                file = open(path + name, 'r', encoding="utf8")
                 fun = file.read()
                 f_name = str(name.split(".")[0])
                 try:
                     exec(fun)
-                    exec('self.' + f_dict + "." + f_name + "=" + f_name)
+                    exec('self.' + f_dict + "[" + f_name + "]=" + f_name)
                 except:
                     print("error of function " + path + name)
                 description = ""
@@ -34,4 +34,4 @@ class SandBox:
                 self.funcs[f_dict][f_name] = description
 
     def run(self, f_dict, name, pcadfile):
-        exec('self.' + f_dict + "." + name + "(pcadfile)")
+        exec('self.' + f_dict + "[" + name + "](pcadfile)")
