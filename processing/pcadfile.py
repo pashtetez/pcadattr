@@ -8,6 +8,9 @@ from processing.comp import Comp
 
 class PcadFile:
     def __init__(self, data=None):
+        self.compmap = {}
+        self.compdefmap = {}
+        self.padmap = {}
         self.m_data = None
         self._write_prev_str = False
         if data:
@@ -54,7 +57,7 @@ class PcadFile:
         self.recursive_write(self.m_data, b, 6)
         return b.getvalue()
 
-    def process(self):
+    def preprocess(self):
         # Заменяет в названиях и Value компонентов символы ' /%<>' на '_' и запятые на точки
 
         replace_map = {}
@@ -101,6 +104,20 @@ class PcadFile:
                 orig_name = find(pgr, 'attr', '"Type"')
                 orig_name[2] = repl(orig_name[2])
 
+
+        # Заменяет refPointSize на 1.0 (размер PNP)
+        # и soldeerSwell на 0.01
+        pcbDesignHeader = findPath(self.m_data, ["pcbDesign", "pcbDesignHeader"])[0]
+        if findAll(pcbDesignHeader, "refPointSize") == []:
+            pcbDesignHeader.append(["refPointSize", "1.0"])
+        else:
+            find(pcbDesignHeader, "refPointSize")[1] = "1.0"
+        if findAll(pcbDesignHeader, "solderSwell") == []:
+            pcbDesignHeader.append(["solderSwell", "0.01"])
+        else:
+            find(pcbDesignHeader, "solderSwell")[1] = "0.01"
+
+
         # self.checkFunction()
         Asize = 6
         Bsize = 20
@@ -110,17 +127,14 @@ class PcadFile:
         Cpads = 160
         headers = ["type", "original_name", "smd_pads", "dip_pads", "width", "height", "size", "dipsmd", "group"]
 
-        self.padmap = {}
         for pad in findPath(self.m_data, ["library", "padStyleDef"]):
             pd = PadDef(pad)
             self.padmap[pd.name] = pd
 
-        self.compdefmap = {}
         for compdef in findPath(self.m_data, ["library", "patternDefExtended"]):
             cpd = CompDef(compdef, self.padmap)
             self.compdefmap[cpd.name] = cpd
 
-        self.compmap = {}
         for comp in findPath(self.m_data, ["pcbDesign", "multiLayer", "pattern"]):
             cp = Comp(comp, self.compdefmap)
             self.compmap[cp.name] = cp
@@ -133,7 +147,7 @@ class PcadFile:
         #     for i in range(0, len(headers) - 1):
         #         self.ui.compDefTable.setItem(0, i + 1, QTableWidgetItem(str(v[i])))
 
-
+    def process(self):
         # Добавляет атрибут DIPSMD
         # Для всех компонентов, аттрибут которых «RefDes» начинается на C, добавляет атрибуты Tolerance, TKE, Voltage.
         # Для всех компонентов, аттрибут которых «RefDes» начинается на R, добавляет аттрибут Tolerance.
@@ -165,6 +179,13 @@ class PcadFile:
                 process_component(desc, v.compdef.dipsmd, v.name)
             except:
                 pass
+
+        # Добавляет PNP в SMD компоненты
+        for (k, v) in self.compdefmap.items():
+            if v.dipsmd == "SMD":
+                mltl = findPath(v.raw_data, ["patternGraphicsDef", "multiLayer"])[0]
+                if not findAll(mltl, 'pickpoint'):
+                    mltl.append(['pickpoint', ['pt', str(v.center_x), str(v.center_y)]])
 
         # Укажите mirror_x_top для отражения координат относительно 0 по X в конечном файле для слоя TOP (0,1)
         # Укажите mirror_y_bot для отражения координат относительно 0 по Y в конечном файле для слоя BOTTOM (0,1)
@@ -209,28 +230,6 @@ class PcadFile:
         #         filehandle.write('\r\n')
         # filehandle_top.close()
         # filehandle_bot.close()
-
-
-
-
-        # Добавляет PNP в SMD компоненты
-        for (k, v) in self.compdefmap.items():
-            if v.dipsmd == "SMD":
-                mltl = findPath(v.raw_data, ["patternGraphicsDef", "multiLayer"])[0]
-                if not findAll(mltl, 'pickpoint'):
-                    mltl.append(['pickpoint', ['pt', str(v.center_x), str(v.center_y)]])
-
-        # Заменяет refPointSize на 1.0 (размер PNP)
-        # и soldeerSwell на 0.01
-        pcbDesignHeader = findPath(self.m_data, ["pcbDesign", "pcbDesignHeader"])[0]
-        if findAll(pcbDesignHeader, "refPointSize") == []:
-            pcbDesignHeader.append(["refPointSize", "1.0"])
-        else:
-            find(pcbDesignHeader, "refPointSize")[1] = "1.0"
-        if findAll(pcbDesignHeader, "solderSwell") == []:
-            pcbDesignHeader.append(["solderSwell", "0.01"])
-        else:
-            find(pcbDesignHeader, "solderSwell")[1] = "0.01"
 
 
 PcadFile.findAll = findAll

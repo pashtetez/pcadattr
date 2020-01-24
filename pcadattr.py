@@ -87,6 +87,7 @@ class MainWindow(QMainWindow):
         with open(str(self.ui.lineEdit_in.text()), 'r', encoding="cp1251") as fl:
             data = fl.read()
             a = PcadFile(data)
+            a.preprocess()
             a.process()
             for x in range(self.ui.listWidget.count()):
                 fun = self.ui.listWidget.item(x)
