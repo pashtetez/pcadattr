@@ -13,4 +13,4 @@ def test(pcad_file):
     if findAll(pcbDesignHeader,"solderSwell") == []:
         pcbDesignHeader.append(["solderSwell","0.01"])
     else:
-        find(pcbDesignHeader,"solderSwell")[1]="0.01"
+        find(pcbDesignHeader,"solderSwell")[1]="2.01"

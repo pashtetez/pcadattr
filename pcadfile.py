@@ -1,30 +1,6 @@
 import re
 from io import StringIO
-
-
-def findAll(a,key,val = None):
-    if val:
-        return [x for x in a if x[0] == key and x[1] == val ]
-    else:
-        return [x for x in a if x[0] == key]
-
-
-def find(a,key,val = None):
-    return findAll(a,key,val)[0]
-
-
-def findPath(a,path,lastval = None):
-    b = a
-    for x in path[:-1]:
-        b = find(b,x)
-    return findAll(b,path[-1],lastval)
-
-
-def mfloat(s):
-    if 'mm' in s:
-        return float(s.replace('mm',''))/0.0254
-    else:
-        return float(s)
+from find_utils import *
 
 
 class PcadFile:
@@ -76,6 +52,8 @@ class PcadFile:
         return b.getvalue()
 
     def process(self):
+        # Заменяет в названиях и Value компонентов символы ' /%<>' на '_' и запятые на точки
+
         replace_map = {}
         replace_symbols = [[" ", "_"], [",", "."], ["/", "_"], ["%", "_"], ["<", "."], [">", "_"]]
 
@@ -132,6 +110,11 @@ class PcadFile:
         # self.checkFunction()
         self.common_parse()
 
+        # Добавляет атрибут DIPSMD
+        # Для всех компонентов, аттрибут которых «RefDes» начинается на C, добавляет атрибуты Tolerance, TKE, Voltage.
+        # Для всех компонентов, аттрибут которых «RefDes» начинается на R, добавляет аттрибут Tolerance.
+        # Для всех SMD компонентов, аттрибут которых «RefDes» начинается на R, добавляет атрибут Value2.
+        # Для всех SMD компонентов добавляет атрибут DB_NUMBER.
         def add_attr_if_not_exists(arr, key, val):
             if findAll(arr, 'attr', key) == []:
                 desc.append(
@@ -159,8 +142,9 @@ class PcadFile:
             except:
                 pass
 
-
-
+        # Укажите mirror_x_top для отражения координат относительно 0 по X в конечном файле для слоя TOP (0,1)
+        # Укажите mirror_y_bot для отражения координат относительно 0 по Y в конечном файле для слоя BOTTOM (0,1)
+        # Укажите mirror_x_bot для отражения координат относительно 0 по X в конечном файле для слоя BOTTOM (0,1)
 
         relative_coord_top = [100.0, 200.0]
         relative_coord_bot = [100.0, 200.0]
@@ -205,7 +189,7 @@ class PcadFile:
 
 
 
-
+        # Добавляет PNP в SMD компоненты
         for (k, v) in self.patmap.items():
             if v[1] > 1 and  v[1] +  v[2] > 0:
                 pickpoint = ['pickpoint', ['pt', v[-3], v[-2]]]
@@ -213,9 +197,8 @@ class PcadFile:
                 if findAll(mltl, 'pickpoint') == []:
                     mltl.append(pickpoint)
 
-
-
-
+        # Заменяет refPointSize на 1.0 (размер PNP)
+        # и soldeerSwell на 0.01
         pcbDesignHeader = findPath(self.m_data, ["pcbDesign", "pcbDesignHeader"])[0]
         if findAll(pcbDesignHeader, "refPointSize") == []:
             pcbDesignHeader.append(["refPointSize", "1.0"])
@@ -359,3 +342,9 @@ class PcadFile:
 
         self.patmap = patmap
         self.comps_to_write = comps_to_write
+
+
+PcadFile.findAll = findAll
+PcadFile.find = find
+PcadFile.findPath = findPath
+PcadFile.mfloat = mfloat

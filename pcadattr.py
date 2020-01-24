@@ -36,6 +36,17 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.fdata = []  # read array
         self.ui.listWidget.itemClicked.connect(self.show_comment)
+        self.sandbox = None
+        self.init_sandbox()
+
+    def init_sandbox(self):
+        self.sandbox = SandBox()
+        for (k, v) in self.sandbox.funcs["other"].items():
+            item = QListWidgetItem(k)
+            item.setData(Qt.UserRole, v)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Unchecked)
+            self.ui.listWidget.addItem(item)
 
     @pyqtSlot()
     def on_pushButton_in_clicked(self):
@@ -82,16 +93,10 @@ class MainWindow(QMainWindow):
             data = fl.read()
             a = PcadFile(data)
             a.process()
-            # for x in range(self.ui.listWidget.count()):
-            #     fun = self.ui.listWidget.item(x)
-            #     if fun.checkState() == Qt.Checked:
-            #         pass
-            s = SandBox()
-            # item = QListWidgetItem(name.split(".")[0])
-            # item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-            # item.setCheckState(Qt.Unchecked)
-            # item.setCheckState(Qt.Unchecked)
-            # self.ui.listWidget.addItem(item)
+            for x in range(self.ui.listWidget.count()):
+                fun = self.ui.listWidget.item(x)
+                if fun.checkState() == Qt.Checked:
+                    self.sandbox.run("other", fun.text(), a)
             with open(self.ui.lineEdit_out.text(), 'w', encoding="cp1251", errors="surrogateescape") as f:
                 f.write(a.export_to_str())
 
@@ -103,12 +108,7 @@ class MainWindow(QMainWindow):
     @pyqtSlot(QListWidgetItem)
     def show_comment(self, item):
         self.ui.plainTextEdit.clear()
-        fun = open(item.text() + '.fun', "r", encoding="utf8")
-        for line in fun:
-            if line.startswith("#"):
-                self.ui.plainTextEdit.setPlainText(self.ui.plainTextEdit.toPlainText() + line)
-            else:
-                return
+        self.ui.plainTextEdit.setPlainText(item.data(Qt.UserRole))
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 import os
+from find_utils import * # for Sandbox functions
 
 
 class SandBox:
@@ -21,7 +22,7 @@ class SandBox:
                 f_name = str(name.split(".")[0])
                 try:
                     exec(fun)
-                    exec('self.' + f_dict + "[" + f_name + "]=" + f_name)
+                    exec('self.' + f_dict + "[\"" + f_name + "\"]=" + f_name)
                 except:
                     print("error of function " + path + name)
                 description = ""
@@ -34,4 +35,4 @@ class SandBox:
                 self.funcs[f_dict][f_name] = description
 
     def run(self, f_dict, name, pcadfile):
-        exec('self.' + f_dict + "[" + name + "](pcadfile)")
+        exec('self.' + f_dict + "[\"" + name + "\"](pcadfile)")
