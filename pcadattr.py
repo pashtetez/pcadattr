@@ -1,23 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from json import loads, dumps
-from datetime import datetime
-import re, os, sys
-from io import StringIO
-import contextlib
+import sys
 
 from ui_main import Ui_MainWindow
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtNetwork import *
 # from PyQt5.QtSvg import *
 from PyQt5 import uic
 
-from pcadfile import *
-from sandbox import *
+from processing.pcadfile import *
+from processing.sandbox import *
 
 # pyinstaller pcadattr.py --add-data "main.ui;." -y --onefile --windowed
 
