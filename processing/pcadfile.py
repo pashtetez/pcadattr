@@ -4,7 +4,7 @@ from processing.find_utils import *
 from processing.paddef import PadDef
 from processing.compdef import CompDef
 from processing.comp import Comp
-
+from svg import Scene
 
 class PcadFile:
     def __init__(self, data=None):
@@ -104,7 +104,6 @@ class PcadFile:
                 orig_name = find(pgr, 'attr', '"Type"')
                 orig_name[2] = repl(orig_name[2])
 
-
         # Заменяет refPointSize на 1.0 (размер PNP)
         # и soldeerSwell на 0.01
         pcbDesignHeader = findPath(self.m_data, ["pcbDesign", "pcbDesignHeader"])[0]
@@ -138,6 +137,12 @@ class PcadFile:
         for comp in findPath(self.m_data, ["pcbDesign", "multiLayer", "pattern"]):
             cp = Comp(comp, self.compdefmap)
             self.compmap[cp.name] = cp
+
+        for (k, v) in self.compdefmap.items():
+            scene = Scene(k.replace("\"", ""))
+            for element in self.compdefmap[k].get_graphics():
+                scene.add(element)
+            scene.write_svg()
 
         # name; orig_name; spads;dpads;width;height;size;dipsmd;group;center_x;center_y;
         # self.ui.compDefTable.setColumnCount(len(headers))
