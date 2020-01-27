@@ -11,6 +11,7 @@ from PyQt5.QtGui import *
 # from PyQt5.QtSvg import *
 from PyQt5 import uic
 
+from settings import Settings
 from processing.pcadfile import *
 from processing.sandbox import *
 
@@ -31,6 +32,11 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.fdata = []  # read array
         self.ui.listWidget.itemClicked.connect(self.show_comment)
+        self.settings = Settings()
+        self.ui.actionGeneral_settings.triggered.connect(lambda: self.settings.showPage(0))
+        self.ui.actionPreprocessing.triggered.connect(lambda: self.settings.showPage(1))
+        self.ui.actionProcessing.triggered.connect(lambda: self.settings.showPage(2))
+        self.ui.actionDrawing.triggered.connect(lambda: self.settings.showPage(3))
         self.sandbox = None
         self.init_sandbox()
 

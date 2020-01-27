@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'main.ui',
-# licensing of 'main.ui' applies.
+# Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Mon Jan 20 14:09:14 2020
-#      by: pyside2-uic  running on PySide2 5.13.2
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtWidgets
-from PyQt5 import QtCore
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -105,23 +105,87 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab_5, "")
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
+        self.menuBar = QtWidgets.QMenuBar(MainWindow)
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 863, 22))
+        self.menuBar.setObjectName("menuBar")
+        self.menuFile = QtWidgets.QMenu(self.menuBar)
+        self.menuFile.setObjectName("menuFile")
+        self.menuView = QtWidgets.QMenu(self.menuBar)
+        self.menuView.setObjectName("menuView")
+        self.menuSettings = QtWidgets.QMenu(self.menuBar)
+        self.menuSettings.setObjectName("menuSettings")
+        self.menuHelp = QtWidgets.QMenu(self.menuBar)
+        self.menuHelp.setObjectName("menuHelp")
+        MainWindow.setMenuBar(self.menuBar)
+        self.actionShow_tape_samples = QtWidgets.QAction(MainWindow)
+        self.actionShow_tape_samples.setObjectName("actionShow_tape_samples")
+        self.actionShow_component_image = QtWidgets.QAction(MainWindow)
+        self.actionShow_component_image.setObjectName("actionShow_component_image")
+        self.actionShow_full_PCB = QtWidgets.QAction(MainWindow)
+        self.actionShow_full_PCB.setObjectName("actionShow_full_PCB")
+        self.actionAbout = QtWidgets.QAction(MainWindow)
+        self.actionAbout.setObjectName("actionAbout")
+        self.actionVersion = QtWidgets.QAction(MainWindow)
+        self.actionVersion.setObjectName("actionVersion")
+        self.actionOpen = QtWidgets.QAction(MainWindow)
+        self.actionOpen.setObjectName("actionOpen")
+        self.actionSave = QtWidgets.QAction(MainWindow)
+        self.actionSave.setObjectName("actionSave")
+        self.actionGeneral_settings = QtWidgets.QAction(MainWindow)
+        self.actionGeneral_settings.setObjectName("actionGeneral_settings")
+        self.actionPreprocessing = QtWidgets.QAction(MainWindow)
+        self.actionPreprocessing.setObjectName("actionPreprocessing")
+        self.actionProcessing = QtWidgets.QAction(MainWindow)
+        self.actionProcessing.setObjectName("actionProcessing")
+        self.actionDrawing = QtWidgets.QAction(MainWindow)
+        self.actionDrawing.setObjectName("actionDrawing")
+        self.menuFile.addAction(self.actionOpen)
+        self.menuFile.addAction(self.actionSave)
+        self.menuView.addAction(self.actionShow_tape_samples)
+        self.menuView.addAction(self.actionShow_component_image)
+        self.menuView.addAction(self.actionShow_full_PCB)
+        self.menuSettings.addAction(self.actionGeneral_settings)
+        self.menuSettings.addAction(self.actionPreprocessing)
+        self.menuSettings.addAction(self.actionProcessing)
+        self.menuSettings.addAction(self.actionDrawing)
+        self.menuHelp.addAction(self.actionAbout)
+        self.menuHelp.addAction(self.actionVersion)
+        self.menuBar.addAction(self.menuFile.menuAction())
+        self.menuBar.addAction(self.menuView.menuAction())
+        self.menuBar.addAction(self.menuSettings.menuAction())
+        self.menuBar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "PcadAttr", None, -1))
-        self.pushButton_out.setText(QtWidgets.QApplication.translate("MainWindow", "choose", None, -1))
-        self.pushButton_in.setText(QtWidgets.QApplication.translate("MainWindow", "choose", None, -1))
-        self.label.setText(QtWidgets.QApplication.translate("MainWindow", "Input file", None, -1))
-        self.label_2.setText(QtWidgets.QApplication.translate("MainWindow", "Output file", None, -1))
-        self.pushButton.setText(QtWidgets.QApplication.translate("MainWindow", "Generate", None, -1))
-        self.label_3.setText(QtWidgets.QApplication.translate("MainWindow", "Description:", None, -1))
-        self.label_4.setText(QtWidgets.QApplication.translate("MainWindow", "Availible actions:", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtWidgets.QApplication.translate("MainWindow", "Processing", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtWidgets.QApplication.translate("MainWindow", "Pad definition", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtWidgets.QApplication.translate("MainWindow", "Component definition", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QtWidgets.QApplication.translate("MainWindow", "Components", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QtWidgets.QApplication.translate("MainWindow", "Reports", None, -1))
-
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "PcadAttr"))
+        self.pushButton_out.setText(_translate("MainWindow", "choose"))
+        self.pushButton_in.setText(_translate("MainWindow", "choose"))
+        self.label.setText(_translate("MainWindow", "Input file"))
+        self.label_2.setText(_translate("MainWindow", "Output file"))
+        self.pushButton.setText(_translate("MainWindow", "Generate"))
+        self.label_3.setText(_translate("MainWindow", "Description:"))
+        self.label_4.setText(_translate("MainWindow", "Availible actions:"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Processing"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Pad definition"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "Component definition"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("MainWindow", "Components"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), _translate("MainWindow", "Reports"))
+        self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.menuView.setTitle(_translate("MainWindow", "View"))
+        self.menuSettings.setTitle(_translate("MainWindow", "Settings"))
+        self.menuHelp.setTitle(_translate("MainWindow", "Help"))
+        self.actionShow_tape_samples.setText(_translate("MainWindow", "Tape samples"))
+        self.actionShow_component_image.setText(_translate("MainWindow", "Component image"))
+        self.actionShow_full_PCB.setText(_translate("MainWindow", "Full PCB"))
+        self.actionAbout.setText(_translate("MainWindow", "Manual"))
+        self.actionVersion.setText(_translate("MainWindow", "About"))
+        self.actionOpen.setText(_translate("MainWindow", "Open"))
+        self.actionSave.setText(_translate("MainWindow", "Save"))
+        self.actionGeneral_settings.setText(_translate("MainWindow", "General settings"))
+        self.actionPreprocessing.setText(_translate("MainWindow", "Preprocessing"))
+        self.actionProcessing.setText(_translate("MainWindow", "Processing"))
+        self.actionDrawing.setText(_translate("MainWindow", "Drawing"))
