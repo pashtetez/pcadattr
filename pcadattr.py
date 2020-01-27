@@ -16,7 +16,7 @@ from processing.pcadfile import *
 from processing.sandbox import *
 
 # pyinstaller pcadattr.py --add-data "main.ui;." -y --onefile --windowed
-
+# pyuic5 settings.ui > ui_settings.py
 try:
     base_path = sys._MEIPASS
 except Exception:
