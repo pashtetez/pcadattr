@@ -44,7 +44,7 @@ class Scene:
                      "3": "style=\"fill:#C000C0;stroke:#C000C0;\"",
                      "4": "style=\"fill:#00C0C0;stroke:#00C0C0;\"",
                      "5": "style=\"fill:#00C000;stroke:#00C000;\"",
-                     "6": "style=\"fill:#FFFFFF;;stroke:#FFFFFF;\"",
+                     "6": "style=\"fill:#FFFFFF;stroke:#FFFFFF;\"",
                      "7": "style=\"fill:#C00000;stroke:#C00000;\"",
                      "8": "style=\"fill:#0000C0;stroke:#0000C0;\"",
                      "9": "style=\"fill:#C0C0C0;stroke:#C0C0C0;\"",

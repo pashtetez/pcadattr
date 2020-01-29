@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.14.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(863, 556)
+        MainWindow.resize(985, 595)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -84,11 +84,10 @@ class Ui_MainWindow(object):
         self.tab_3.setObjectName("tab_3")
         self.gridLayout_6 = QtWidgets.QGridLayout(self.tab_3)
         self.gridLayout_6.setObjectName("gridLayout_6")
-        self.compDefTable = QtWidgets.QTableWidget(self.tab_3)
-        self.compDefTable.setObjectName("compDefTable")
-        self.compDefTable.setColumnCount(0)
-        self.compDefTable.setRowCount(0)
-        self.gridLayout_6.addWidget(self.compDefTable, 0, 0, 1, 1)
+        self.tableView = QtWidgets.QTableView(self.tab_3)
+        self.tableView.setSortingEnabled(True)
+        self.tableView.setObjectName("tableView")
+        self.gridLayout_6.addWidget(self.tableView, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_3, "")
         self.tab_4 = QtWidgets.QWidget()
         self.tab_4.setObjectName("tab_4")
@@ -106,7 +105,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 863, 22))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 985, 22))
         self.menuBar.setObjectName("menuBar")
         self.menuFile = QtWidgets.QMenu(self.menuBar)
         self.menuFile.setObjectName("menuFile")
@@ -117,6 +116,35 @@ class Ui_MainWindow(object):
         self.menuHelp = QtWidgets.QMenu(self.menuBar)
         self.menuHelp.setObjectName("menuHelp")
         MainWindow.setMenuBar(self.menuBar)
+        self.dockWidget = QtWidgets.QDockWidget(MainWindow)
+        self.dockWidget.setObjectName("dockWidget")
+        self.dockWidgetContents = QtWidgets.QWidget()
+        self.dockWidgetContents.setObjectName("dockWidgetContents")
+        self.gridLayout_8 = QtWidgets.QGridLayout(self.dockWidgetContents)
+        self.gridLayout_8.setObjectName("gridLayout_8")
+        self.pushButton_2 = QtWidgets.QPushButton(self.dockWidgetContents)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.gridLayout_8.addWidget(self.pushButton_2, 3, 0, 1, 1)
+        self.pushButton_3 = QtWidgets.QPushButton(self.dockWidgetContents)
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.gridLayout_8.addWidget(self.pushButton_3, 3, 1, 1, 1)
+        self.comboBox = QtWidgets.QComboBox(self.dockWidgetContents)
+        self.comboBox.setObjectName("comboBox")
+        self.gridLayout_8.addWidget(self.comboBox, 0, 0, 1, 2)
+        self.label_6 = QtWidgets.QLabel(self.dockWidgetContents)
+        self.label_6.setMinimumSize(QtCore.QSize(200, 200))
+        self.label_6.setMaximumSize(QtCore.QSize(200, 200))
+        self.label_6.setText("")
+        self.label_6.setObjectName("label_6")
+        self.gridLayout_8.addWidget(self.label_6, 1, 0, 1, 2)
+        self.label_7 = QtWidgets.QLabel(self.dockWidgetContents)
+        self.label_7.setObjectName("label_7")
+        self.gridLayout_8.addWidget(self.label_7, 4, 0, 1, 2)
+        self.compDrawing = QtWidgets.QGraphicsView(self.dockWidgetContents)
+        self.compDrawing.setObjectName("compDrawing")
+        self.gridLayout_8.addWidget(self.compDrawing, 2, 0, 1, 2)
+        self.dockWidget.setWidget(self.dockWidgetContents)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidget)
         self.actionShow_tape_samples = QtWidgets.QAction(MainWindow)
         self.actionShow_tape_samples.setObjectName("actionShow_tape_samples")
         self.actionShow_component_image = QtWidgets.QAction(MainWindow)
@@ -156,7 +184,7 @@ class Ui_MainWindow(object):
         self.menuBar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -178,6 +206,9 @@ class Ui_MainWindow(object):
         self.menuView.setTitle(_translate("MainWindow", "View"))
         self.menuSettings.setTitle(_translate("MainWindow", "Settings"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
+        self.pushButton_2.setText(_translate("MainWindow", "Left"))
+        self.pushButton_3.setText(_translate("MainWindow", "Right"))
+        self.label_7.setText(_translate("MainWindow", "Board Image: WIP"))
         self.actionShow_tape_samples.setText(_translate("MainWindow", "Tape samples"))
         self.actionShow_component_image.setText(_translate("MainWindow", "Component image"))
         self.actionShow_full_PCB.setText(_translate("MainWindow", "Full PCB"))

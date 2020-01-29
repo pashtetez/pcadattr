@@ -3,18 +3,21 @@
 
 import sys
 
+from graphics.pnp import PnP
 from ui_main import Ui_MainWindow
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+# from PyQt5.QtWebKit import *
+# from PyQt5.QtWebKitWidgets import *
 # from PyQt5.QtSvg import *
 from PyQt5 import uic
 
 from settings import Settings
 from processing.pcadfile import *
 from processing.sandbox import *
-
+from compdefmodel import *
 # pyinstaller pcadattr.py --add-data "main.ui;." -y --onefile --windowed
 # pyuic5 settings.ui > ui_settings.py
 try:
@@ -61,6 +64,8 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_pushButton_out_clicked(self):
+        self.ui.label_5.setPixmap(
+            QIcon("/home/pashtetez/pcadattr/comps/C0402_1.svg").pixmap(QSize(self.ui.label_5.size())))
         fileDialog = QFileDialog()
         fileDialog.setDefaultSuffix("pcb")
         self.ui.lineEdit_out.setText(
@@ -95,6 +100,9 @@ class MainWindow(QMainWindow):
             a = PcadFile(data)
             a.preprocess()
             a.process()
+            self.cdm = CompDefModel(a.compdefmap)
+            self.ui.tableView.setModel(self.cdm.filter)
+            self.ui.tableView.clicked.connect(self.table_compdef_click)
             for x in range(self.ui.listWidget.count()):
                 fun = self.ui.listWidget.item(x)
                 if fun.checkState() == Qt.Checked:
@@ -106,6 +114,34 @@ class MainWindow(QMainWindow):
                                     "File generated successfully",
                                     QMessageBox.Ok)):
             return
+
+    @pyqtSlot(QModelIndex)
+    def table_compdef_click(self, item: QModelIndex):
+        print("click")
+        it = self.cdm.filter.mapToSource(item).internalPointer()
+        if type(it) == CompDef:
+            fname = "comps/" + it.name.replace("\"", "") + ".svg"
+            # self.ui.webView.load(QUrl.fromLocalFile(os.getcwd() + "/" + fname))
+            # self.ui.webView.show()
+            #self.ui.compDrawing.lsetPixmap(QIcon(fname).pixmap(QSize(self.ui.label_5.size())))
+            item = QGraphicsPixmapItem(QIcon(fname).pixmap(QSize(300, 300)))
+            s = QGraphicsScene()
+            s.setSceneRect(0, 0, 300, 300)
+            s.addItem(item)
+            item1 = PnP()
+            item1.setPos(150, 150)
+            s.addItem(item1)
+            def d(x):
+                drag = QDrag(self)
+                drag.setMimeData(QMimeData())
+                drag.exec()
+            s.mousePressEvent = d
+
+            s.dragEnterEvent = lambda e: e.acceptProposedAction()
+            self.ui.compDrawing.setBackgroundBrush(Qt.black)
+            self.ui.compDrawing.setScene(s)
+            # self.ui.compDrawing.setAcceptDrops(True)
+            # self.ui.compDrawing.setDragDropMode(QAbstractItemView.DragOnly)
 
     @pyqtSlot(QListWidgetItem)
     def show_comment(self, item):
