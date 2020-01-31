@@ -2,25 +2,38 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
+
 class PnP(QGraphicsItem):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setToolTip("pnp ololo")
-        self.setCursor(Qt.OpenHandCursor)
-        self.setAcceptedMouseButtons(Qt.LeftButton)
-        self.setFlag(QGraphicsItem.ItemIsMovable)
-        # self.setFlag(QGraphicsItem.itemIsSelectable)
+        self.size: int = 60
+        # self.setToolTip("pnp ololo")
+        # self.setCursor(Qt.OpenHandCursor)
+        # self.setAcceptedMouseButtons(Qt.LeftButton)
+        # self.setFlag(QGraphicsItem.ItemIsMovable)
+        # # self.setFlag(QGraphicsItem.itemIsSelectable)
 
     def boundingRect(self):
-        return QRectF(-15.5, -15.5, 34, 34)
+        return QRectF(-self.size/2, -self.size/2, self.size, self.size)
 
     def paint(self, painter: QPainter, option, widget):
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(Qt.darkGray)
-        painter.drawEllipse(-12,-12,30,30)
-        painter.setPen(QPen(Qt.black,1))
-        painter.setBrush(QBrush(QColor(Qt.red)))
-        painter.drawEllipse(-15, -15, 30, 30)
+        painter.setPen(Qt.white)
+        painter.setBrush(Qt.white)
+        painter.drawLine(-self.size / 6, -self.size / 6, -self.size / 6, self.size / 6)
+        painter.drawLine(-self.size / 6, self.size / 6, self.size / 6, self.size / 6)
+        painter.drawLine(self.size / 6, self.size / 6, self.size / 6, -self.size / 6)
+        painter.drawLine(self.size / 6, -self.size / 6, -self.size / 6, -self.size / 6)
+        painter.drawLine(-self.size / 2, 0, self.size / 2, 0)
+        painter.drawLine(0, -self.size / 2, 0, self.size / 2)
+
+    def mouseMoveEvent(self, event: QGraphicsSceneMouseEvent):
+        self.setPos(self.mapToScene(event.pos()))
+
+    def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
+        self.setCursor(QCursor(Qt.ClosedHandCursor))
+
+    def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent):
+        self.setCursor(QCursor(Qt.ArrowCursor))
 
     # def mousePressEvent(self, QGraphicsSceneMouseEvent):
     #     self.setCursor(Qt.ClosedHandCursor)

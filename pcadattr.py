@@ -131,13 +131,10 @@ class MainWindow(QMainWindow):
             item1 = PnP()
             item1.setPos(150, 150)
             s.addItem(item1)
-            def d(x):
-                drag = QDrag(self)
-                drag.setMimeData(QMimeData())
-                drag.exec()
-            s.mousePressEvent = d
 
-            s.dragEnterEvent = lambda e: e.acceptProposedAction()
+            self.ui.compDrawing.setRenderHint(QPainter.Antialiasing)
+            self.ui.compDrawing.setCacheMode(QGraphicsView.CacheBackground)
+            self.ui.compDrawing.setViewportUpdateMode(QGraphicsView.BoundingRectViewportUpdate)
             self.ui.compDrawing.setBackgroundBrush(Qt.black)
             self.ui.compDrawing.setScene(s)
             # self.ui.compDrawing.setAcceptDrops(True)
